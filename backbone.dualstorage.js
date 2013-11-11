@@ -329,8 +329,7 @@ as that.
           return success(resp, status, xhr);
         };
         options.error = function(resp) {
-          options.dirty = true;
-          return success(localsync(method, model, options));
+          return error(resp);
         };
         return onlineSync(method, model, options);
       case 'update':

@@ -36,7 +36,7 @@ S4 = ->
 # Our Store is represented by a single JS object in *localStorage*. Create it
 # with a meaningful name, like the name you'd give a table.
 class window.Store
-  sep: '' # previously '-'
+  sep: '' # previously '-' 
 
   constructor: (name) ->
     @name = name
@@ -198,7 +198,7 @@ onlineSync = (method, model, options) ->
   backboneSync(method, model, options)
 
 dualsync = (method, model, options) ->
-    
+
   if options.storageName
       options.storeName = options.storageName.concat('_' + (result(model.collection, 'url') || result(model, 'url')))
   else
@@ -248,9 +248,11 @@ dualsync = (method, model, options) ->
       options.success = (resp, status, xhr) ->
         localsync(method, resp, options)
         success(resp, status, xhr)
-      options.error = (resp) ->
-        options.dirty = true
-        success localsync(method, model, options)
+      options.error = (resp, status, xhr) ->
+
+        #SA request POST not work correct
+        #options.dirty = true
+        error(resp, status, xhr)
       
       onlineSync(method, model, options)
 
