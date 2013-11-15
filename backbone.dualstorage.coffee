@@ -223,26 +223,23 @@ dualsync = (method, model, options) ->
   
   switch method
     when 'read'
-      if localsync('hasDirtyOrDestroyed', model, options)
-        success localsync(method, model, options)
-      else
-        options.success = (resp, status, xhr) ->
-          resp = parseRemoteResponse(model, resp)
+      options.success = (resp, status, xhr) ->
+        resp = parseRemoteResponse(model, resp)
           
-          localsync('clear', model, options) unless options.add
+        localsync('clear', model, options) unless options.add
           
-          if _.isArray resp
-            for i in resp
-              localsync('create', i, options)
-          else
-            localsync('create', resp, options)
+        if _.isArray resp
+          for i in resp
+            localsync('create', i, options)
+        else
+          localsync('create', resp, options)
           
-          success(resp, status, xhr)
+        success(resp, status, xhr)
         
-        options.error = (resp) ->
-          success localsync(method, model, options)
+      options.error = (resp) ->
+        success localsync(method, model, options)
 
-        onlineSync(method, model, options)
+      onlineSync(method, model, options)
 
     when 'create'
       options.success = (resp, status, xhr) ->

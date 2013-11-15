@@ -298,38 +298,33 @@ as that.
     error = options.error;
     switch (method) {
       case 'read':
-        if (localsync('hasDirtyOrDestroyed', model, options)) {
+        options.success = function(resp, status, xhr) {
+          var i, _i, _len;
+          resp = parseRemoteResponse(model, resp);
+          if (!options.add) {
+            localsync('clear', model, options);
+          }
+          if (_.isArray(resp)) {
+            for (_i = 0, _len = resp.length; _i < _len; _i++) {
+              i = resp[_i];
+              localsync('create', i, options);
+            }
+          } else {
+            localsync('create', resp, options);
+          }
+          return success(resp, status, xhr);
+        };
+        options.error = function(resp) {
           return success(localsync(method, model, options));
-        } else {
-          options.success = function(resp, status, xhr) {
-            var i, _i, _len;
-            resp = parseRemoteResponse(model, resp);
-            if (!options.add) {
-              localsync('clear', model, options);
-            }
-            if (_.isArray(resp)) {
-              for (_i = 0, _len = resp.length; _i < _len; _i++) {
-                i = resp[_i];
-                localsync('create', i, options);
-              }
-            } else {
-              localsync('create', resp, options);
-            }
-            return success(resp, status, xhr);
-          };
-          options.error = function(resp) {
-            return success(localsync(method, model, options));
-          };
-          return onlineSync(method, model, options);
-        }
-        break;
+        };
+        return onlineSync(method, model, options);
       case 'create':
         options.success = function(resp, status, xhr) {
           localsync(method, resp, options);
           return success(resp, status, xhr);
         };
-        options.error = function(resp) {
-          return error(resp);
+        options.error = function(resp, status, xhr) {
+          return error(resp, status, xhr);
         };
         return onlineSync(method, model, options);
       case 'update':
