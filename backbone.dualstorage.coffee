@@ -156,6 +156,7 @@ localsync = (method, model, options) ->
       unless options.add and not options.merge and store.find(model)
         model = store.create(model)
         store.dirty(model) if options.dirty
+        model
     when 'update'
       store.update(model)
       if options.dirty then store.dirty(model) else store.clean(model, 'dirty')
